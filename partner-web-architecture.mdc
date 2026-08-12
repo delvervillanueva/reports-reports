@@ -1,0 +1,1046 @@
+---
+
+description: Architecture and UI rules for the banking reports and requests dashboard microfrontend
+globs: ["src/app/features/reports/**/*", "src/app/shared/**/*", "src/app/app.routes.ts"]
+alwaysApply: true
+-----------------
+
+# Banking Reports Web Architecture Rules
+
+## 1. Purpose
+
+This repository contains the banking Reports microfrontend.
+
+Its primary responsibility is to provide a desktop web interface for consulting, searching, filtering, sorting, paginating and exporting banking requests.
+
+The main experience is the **Requests Dashboard**.
+
+The reference UI mockups are the visual source of truth.
+
+This microfrontend must focus on reporting and request consultation.
+
+It must not implement:
+
+* customer onboarding flows
+* contract generation
+* loan orchestration
+* product selection flows
+* customer registration
+* downstream business processes owned by other microfrontends
+
+---
+
+# 2. Primary Experience
+
+The main page is the Requests Dashboard.
+
+Preferred route:
+
+`/requests`
+
+The page must provide:
+
+* requests table
+* DNI search
+* sortable columns
+* request status visualization
+* pagination
+* total request count
+* export action
+* loading state
+* empty state
+* error state
+
+The requests table is the primary visual and functional element of the page.
+
+Do not replace the table with cards unless explicitly required by a future design.
+
+---
+
+# 3. Design Philosophy
+
+The UI must prioritize:
+
+* clean banking interface
+* professional enterprise appearance
+* pixel-perfect implementation
+* desktop-first layout
+* information density
+* readability
+* reusable components
+* accessibility
+* consistent spacing
+* production-ready code
+
+The provided UI mockup is the design source of truth.
+
+Cursor must reproduce the reference design as accurately as possible and must not redesign the screen based on personal assumptions.
+
+---
+
+# 4. Desktop-First Layout
+
+This application primarily targets desktop browsers.
+
+Rules:
+
+* design for desktop first
+* minimum supported width: 1280px
+* optimize especially for 1366px, 1440px and 1920px screens
+* table content should use the available horizontal space efficiently
+* avoid unnecessary narrow containers
+* responsive behavior is secondary
+* do not transform the desktop table into cards unless explicitly requested
+* preserve readable column spacing at supported desktop resolutions
+
+The main reports area should feel wide and data-oriented.
+
+---
+
+# 5. Main Layout Structure
+
+Use a consistent application layout.
+
+```text
+ReportsLayout
+
+├── Header
+│
+└── Main Content
+    │
+    ├── Page Header
+    │   ├── Page Title
+    │   └── Toolbar
+    │       ├── DNI Search
+    │       └── Export Action
+    │
+    └── Requests Table Container
+        ├── Table Header
+        ├── Table Rows
+        └── Table Footer
+            ├── Result Summary
+            └── Pagination
+```
+
+Avoid unnecessary wrappers that do not provide semantic, structural or styling value.
+
+---
+
+# 6. Header
+
+The application header must be an independent reusable component.
+
+Responsibilities may include:
+
+* Santander Consumer logo
+* Search navigation
+* Requests navigation
+* authenticated user information
+* user avatar or initials
+* logout action
+
+The header must not contain reports-specific business logic.
+
+Preferred component:
+
+`partner-header.component.ts`
+
+or, if the repository is reports-specific:
+
+`reports-header.component.ts`
+
+Reuse an existing shared header if the project already provides one.
+
+Do not duplicate an existing header implementation.
+
+---
+
+# 7. Requests Page
+
+Preferred page component:
+
+`requests-page.component.ts`
+
+The page should orchestrate the feature but remain lightweight.
+
+Responsibilities:
+
+* initialize requests
+* coordinate search
+* coordinate sorting
+* coordinate pagination
+* coordinate export
+* consume feature state
+* compose presentation components
+
+The page must not contain large amounts of table markup or API implementation logic.
+
+---
+
+# 8. Page Header and Toolbar
+
+The page header should reproduce the reference layout.
+
+Expected structure:
+
+```text
+Bandeja de solicitudes                         Buscar DNI
+                                                [ input       🔍 ]  Exportar
+```
+
+The title should remain visually separated from the toolbar.
+
+Preferred reusable components:
+
+* `requests-toolbar.component.ts`
+* `dni-search.component.ts`
+* `export-action.component.ts`
+
+Do not create separate components for trivial elements unless reuse or complexity justifies them.
+
+---
+
+# 9. DNI Search
+
+The search field is specifically intended to search requests by customer DNI.
+
+Preferred internal naming:
+
+* `dniSearch`
+* `searchByDni()`
+* `dniSearchControl`
+
+Use Angular Reactive Forms.
+
+Expected behavior:
+
+* accept the required DNI format
+* prevent invalid input when appropriate
+* support keyboard submission
+* allow search through the search icon
+* expose loading behavior
+* handle no-result scenarios
+* preserve accessibility
+
+Do not implement filtering only at presentation level when the real API is expected to perform server-side search.
+
+API integration must remain isolated from the UI component.
+
+---
+
+# 10. Requests Table
+
+The requests table is the core component of this feature.
+
+Preferred component:
+
+`requests-table.component.ts`
+
+The table should reproduce the visual structure shown in the reference mockup.
+
+Expected columns:
+
+* Request Date
+* Customer DNI
+* Transaction Amount
+* Branch
+* Request Status
+
+Internal code and models must use English naming even if visible UI labels are displayed in Spanish.
+
+Example:
+
+```ts
+export interface RequestItem {
+  requestDate: string;
+  customerDni: string;
+  transactionAmount: number;
+  branch: string;
+  status: RequestStatus;
+}
+```
+
+Do not use Spanish property names in TypeScript models.
+
+---
+
+# 11. Table Responsibilities
+
+The table presentation component may be responsible for:
+
+* rendering headers
+* rendering rows
+* displaying formatted values
+* emitting sorting events
+* displaying status badges
+
+It should not be responsible for:
+
+* calling APIs
+* managing backend pagination
+* exporting files
+* storing global feature state
+* implementing business orchestration
+
+Keep data retrieval outside the table component.
+
+---
+
+# 12. Sorting
+
+Sortable columns must clearly indicate their sorting capability.
+
+The reference design uses sorting indicators beside column labels.
+
+Possible sortable fields:
+
+* request date
+* customer DNI
+* transaction amount
+* branch
+* request status
+
+Use an explicit model:
+
+```ts
+export type SortDirection = 'asc' | 'desc';
+
+export interface RequestSort {
+  field: RequestSortField;
+  direction: SortDirection;
+}
+```
+
+Sorting behavior should be controlled by the feature/page layer.
+
+If sorting is server-side, send the selected sorting configuration through the API service.
+
+Do not duplicate sorting logic across components.
+
+---
+
+# 13. Request Status
+
+Request statuses must use a reusable visual component.
+
+Preferred component:
+
+`request-status-badge.component.ts`
+
+Example status model:
+
+```ts
+export type RequestStatus =
+  | 'approved'
+  | 'pending'
+  | 'rejected';
+```
+
+Visible labels may be:
+
+* Aprobado
+* Pendiente
+* Rechazado
+
+The visual treatment should follow the provided mockup.
+
+Expected semantic styles:
+
+* approved → positive/success appearance
+* pending → warning appearance
+* rejected → negative/rejection appearance
+
+Do not hardcode status presentation independently in every table row.
+
+Centralize status-to-label and status-to-style mapping.
+
+---
+
+# 14. Pagination
+
+Pagination must be implemented as a reusable component.
+
+Preferred component:
+
+`pagination.component.ts`
+
+Expected information:
+
+* current page
+* page size
+* total records
+* total pages
+
+The reference UI includes:
+
+* current result range
+* total number of requests
+* previous action
+* page numbers
+* ellipsis where appropriate
+* next action
+
+Example:
+
+`1 a 15 de 1,233 solicitudes`
+
+Pagination must support large datasets.
+
+Do not render hundreds of page buttons simultaneously.
+
+---
+
+# 15. Pagination State
+
+Use an explicit model.
+
+```ts
+export interface PaginationState {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+```
+
+Pagination should preferably be server-side when consuming a paginated backend API.
+
+Changing pages should trigger the corresponding data request rather than loading the complete dataset into the browser unless the API contract explicitly requires otherwise.
+
+---
+
+# 16. Export
+
+The page provides an Export action.
+
+Preferred component or action:
+
+`export-action.component.ts`
+
+Preferred service responsibility:
+
+`requests-export.service.ts`
+
+The UI should only trigger the export request.
+
+Export implementation must remain outside the presentation component.
+
+Possible export responsibilities:
+
+* preserve active filters when required
+* preserve search criteria when required
+* request the export from the appropriate API
+* manage export loading state
+* handle export errors
+* trigger the resulting file download
+
+Do not generate fake CSV or Excel data unless explicitly requested.
+
+Do not assume the export format until defined by the backend contract.
+
+---
+
+# 17. Feature State
+
+The reports feature should maintain centralized reactive state.
+
+Prefer Angular Signals.
+
+Suggested state:
+
+```ts
+export interface RequestsState {
+  requests: RequestItem[];
+  loading: boolean;
+  error: string | null;
+
+  dniSearch: string;
+
+  sort: RequestSort | null;
+
+  pagination: PaginationState;
+}
+```
+
+State should be:
+
+* explicit
+* reactive
+* predictable
+* feature-scoped
+* immutable when practical
+
+Avoid mutable global variables.
+
+---
+
+# 18. Derived State
+
+Use `computed()` for derived UI information when appropriate.
+
+Examples:
+
+* has results
+* is empty
+* current result range
+* can navigate previous
+* can navigate next
+
+Avoid manually synchronizing values that can be derived from existing state.
+
+---
+
+# 19. API Services
+
+Separate API responsibilities from presentation.
+
+Preferred service:
+
+`requests-api.service.ts`
+
+Possible responsibilities:
+
+* retrieve requests
+* search by DNI
+* request paginated data
+* send sorting parameters
+
+Export logic may remain in:
+
+`requests-export.service.ts`
+
+Do not create generic services such as:
+
+* `api.service.ts`
+* `data.service.ts`
+* `service.service.ts`
+
+Service names must clearly describe their responsibility.
+
+---
+
+# 20. API Models
+
+Separate API DTOs from UI/domain models when the backend contract differs from the presentation model.
+
+Recommended folders:
+
+```text
+models/
+├── request-item.model.ts
+├── request-status.model.ts
+├── request-query.model.ts
+└── pagination.model.ts
+
+interfaces/
+└── requests-api-response.interface.ts
+```
+
+Do not bind raw API responses directly to complex UI logic when transformation is required.
+
+---
+
+# 21. Query Model
+
+Search, sorting and pagination parameters should be represented explicitly.
+
+Example:
+
+```ts
+export interface RequestsQuery {
+  dni?: string;
+  page: number;
+  pageSize: number;
+  sortField?: RequestSortField;
+  sortDirection?: SortDirection;
+}
+```
+
+This object should represent the current report query.
+
+Avoid spreading query parameters across unrelated variables.
+
+---
+
+# 22. Recommended Feature Architecture
+
+Prefer feature-first organization.
+
+```text
+src/app/
+
+├── core/
+│   ├── services/
+│   ├── interceptors/
+│   └── guards/
+│
+├── shared/
+│   ├── components/
+│   ├── directives/
+│   ├── pipes/
+│   └── models/
+│
+├── layouts/
+│   └── reports-layout/
+│
+└── features/
+    └── reports/
+        ├── pages/
+        │   └── requests-page/
+        │
+        ├── components/
+        │   ├── requests-toolbar/
+        │   ├── dni-search/
+        │   ├── requests-table/
+        │   ├── request-status-badge/
+        │   ├── pagination/
+        │   ├── empty-state/
+        │   └── error-state/
+        │
+        ├── services/
+        │   ├── requests-api.service.ts
+        │   └── requests-export.service.ts
+        │
+        ├── state/
+        │   └── requests-state.service.ts
+        │
+        ├── models/
+        │
+        ├── interfaces/
+        │
+        └── utils/
+```
+
+Do not create folders that remain empty or have no architectural purpose.
+
+---
+
+# 23. Shared vs Feature Components
+
+Keep reports-specific components inside the reports feature.
+
+Examples:
+
+* requests table
+* DNI search
+* request status badge
+* requests toolbar
+
+Move a component to `shared/` only when it is genuinely reusable by multiple independent features.
+
+Do not prematurely move everything into `shared`.
+
+---
+
+# 24. Routing
+
+Routes must represent the business domain.
+
+Preferred route:
+
+`/requests`
+
+Possible future routes:
+
+`/requests/:id`
+
+`/reports`
+
+Avoid generic routes such as:
+
+* `/home`
+* `/table`
+* `/page`
+* `/list`
+* `/screen1`
+
+Use lazy-loaded standalone components where appropriate.
+
+---
+
+# 25. Loading State
+
+Loading must be explicit.
+
+When requests are being retrieved:
+
+* prevent duplicate requests where appropriate
+* communicate loading visually
+* preserve layout stability
+* avoid rendering misleading empty results
+
+Do not display the empty state while the initial request is still loading.
+
+---
+
+# 26. Empty State
+
+If no requests exist for the current query, display an intentional empty state.
+
+Example visible message:
+
+`No se encontraron solicitudes.`
+
+The empty state should remain inside the table/content area whenever possible so the page structure remains stable.
+
+Do not leave the page blank.
+
+---
+
+# 27. Error State
+
+API failures must produce a controlled error state.
+
+The UI must:
+
+* communicate that requests could not be loaded
+* avoid exposing raw backend errors
+* allow retry when appropriate
+* preserve the surrounding application layout
+
+Technical errors may be logged through the project's existing logging mechanism.
+
+---
+
+# 28. Styling
+
+Use SCSS.
+
+Follow the project's established BEM methodology.
+
+Examples:
+
+```scss
+.requests-page {}
+.requests-page__header {}
+.requests-page__toolbar {}
+.requests-page__table {}
+.requests-page__pagination {}
+```
+
+Avoid:
+
+* inline styles
+* duplicated declarations
+* deeply nested selectors
+* unnecessary `!important`
+* generic class names
+* global styles for feature-specific elements
+
+---
+
+# 29. Design Tokens
+
+Prefer existing Santander or project design tokens.
+
+Use tokens for:
+
+* colors
+* typography
+* spacing
+* borders
+* radius
+* shadows
+
+Do not repeatedly hardcode equivalent visual values across components.
+
+If a required token already exists in the project, reuse it instead of creating another one.
+
+---
+
+# 30. Visual Accuracy
+
+The provided mockup must be treated as the visual reference.
+
+Pay special attention to:
+
+* Santander header proportions
+* horizontal page spacing
+* page title position
+* DNI search alignment
+* Export action alignment
+* table width
+* column distribution
+* row height
+* table header typography
+* subtle row separators
+* rounded table container
+* status badge dimensions
+* pagination alignment
+* total records position
+* background color
+* whitespace
+
+Do not redesign these elements without explicit instruction.
+
+---
+
+# 31. Table Layout Stability
+
+Avoid visual movement when data changes.
+
+Rules:
+
+* maintain consistent row heights
+* maintain stable column widths
+* avoid resizing the entire table when status text changes
+* align numeric values consistently
+* keep pagination position stable
+* prevent search loading from shifting the page unnecessarily
+
+---
+
+# 32. Accessibility
+
+Use semantic HTML whenever possible.
+
+Prefer an actual HTML table structure for tabular information.
+
+Use:
+
+* `<table>`
+* `<thead>`
+* `<tbody>`
+* `<th>`
+* `<tr>`
+* `<td>`
+
+Sorting controls must be keyboard accessible.
+
+Search input must have an associated label.
+
+Buttons must have meaningful accessible names.
+
+Status information must not depend exclusively on color.
+
+Use ARIA only when native HTML semantics are insufficient.
+
+---
+
+# 33. Angular Practices
+
+Use Angular 20 practices.
+
+Prefer:
+
+* standalone components
+* Signals
+* `computed()`
+* `inject()`
+* Reactive Forms
+* lazy loading
+* typed interfaces
+* OnPush when appropriate
+* modern Angular template control flow
+
+Example:
+
+```html
+@if (loading()) {
+  ...
+} @else if (error()) {
+  ...
+} @else if (requests().length === 0) {
+  ...
+} @else {
+  ...
+}
+```
+
+Avoid unnecessary manual subscriptions.
+
+---
+
+# 34. Naming
+
+Code identifiers and filenames must be in English.
+
+Preferred:
+
+* `requests-page.component.ts`
+* `requests-table.component.ts`
+* `requests-toolbar.component.ts`
+* `request-status-badge.component.ts`
+* `requests-api.service.ts`
+* `requests-state.service.ts`
+* `requests-export.service.ts`
+* `pagination.component.ts`
+
+Visible UI text may remain in Spanish according to the design.
+
+Do not translate business-facing labels unless explicitly requested.
+
+---
+
+# 35. Separation of Responsibilities
+
+Maintain clear boundaries.
+
+Page:
+
+* orchestrates the feature
+
+State:
+
+* manages reactive feature state
+
+API service:
+
+* communicates with backend
+
+Table:
+
+* presents requests
+
+Search:
+
+* captures DNI criteria
+
+Pagination:
+
+* emits page changes
+
+Status badge:
+
+* presents request status
+
+Export service:
+
+* handles export integration
+
+Do not mix these responsibilities unnecessarily.
+
+---
+
+# 36. Data Flow
+
+Prefer predictable one-directional data flow.
+
+```text
+User Action
+    ↓
+Page / Feature
+    ↓
+State or Service
+    ↓
+API
+    ↓
+Response
+    ↓
+State
+    ↓
+UI
+```
+
+Child presentation components should preferably receive data through inputs and communicate actions through outputs.
+
+Avoid child components directly modifying unrelated application state.
+
+---
+
+# 37. Testing Considerations
+
+Components and services should be easy to test independently.
+
+Prioritize tests for:
+
+* DNI search behavior
+* sorting events
+* pagination
+* status mapping
+* empty state
+* error state
+* API query construction
+* export triggering
+
+Avoid architecture that requires rendering the entire application to test basic feature behavior.
+
+---
+
+# 38. Performance
+
+Prefer:
+
+* server-side pagination
+* server-side filtering when supported
+* server-side sorting when supported
+* Signals
+* OnPush
+* immutable updates
+* `track` expressions in repeated templates
+
+Avoid:
+
+* loading the entire request history unnecessarily
+* repeated API calls for unchanged queries
+* unnecessary subscriptions
+* expensive template calculations
+
+---
+
+# 39. Cursor Responsibilities
+
+When generating code for this repository, Cursor should:
+
+* preserve the reports domain
+* use the provided mockup as visual source of truth
+* prioritize the requests dashboard
+* preserve desktop-first behavior
+* generate modular Angular 20 code
+* use standalone components
+* use Signals where appropriate
+* use Reactive Forms for DNI search
+* separate table presentation from API communication
+* implement reusable status badges
+* implement scalable pagination
+* keep search, sorting and pagination state explicit
+* preserve feature-first architecture
+* reuse existing project components and design tokens whenever available
+* keep code identifiers in English
+* keep visible UI labels aligned with the provided Spanish design
+* generate production-quality code
+
+---
+
+# 40. Cursor Must Avoid
+
+Do not:
+
+* redesign the supplied mockup
+* convert the requests table into cards
+* create giant page components
+* put API calls inside table components
+* mix export logic with presentation logic
+* hardcode fake backend responses into production components
+* duplicate status styling
+* duplicate pagination logic
+* create unnecessary global state
+* use mutable global variables
+* create generic service names
+* create generic routes
+* use inline CSS
+* create unnecessary wrappers
+* introduce mobile-first behavior that compromises the desktop design
+* invent request fields not present in the requirements
+* invent backend endpoints
+* invent export formats
+* invent business rules
+
+---
+
+# 41. Final Architecture Principle
+
+The Reports microfrontend must remain:
+
+* data-oriented
+* modular
+* desktop-first
+* scalable
+* accessible
+* predictable
+* visually consistent
+* isolated from unrelated banking flows
+
+The **Requests Dashboard** is the primary experience.
+
+The requests table, DNI search, sorting, status representation, pagination and export capabilities must be implemented as clear and maintainable responsibilities rather than as one monolithic page.
