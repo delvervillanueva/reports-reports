@@ -1,0 +1,19 @@
+:root {
+  --color-brand: #ec0000;
+  --color-teal: #14747b;
+  --color-text: #242424;
+  --color-muted: #767676;
+  --color-line: #cddfe7;
+  --color-page: #f4f9fb;
+  --color-surface: #fff;
+  --space-page: 28px;
+  --radius-card: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--color-text);
+}
+
+* { box-sizing: border-box; }
+html, body { min-width: 1280px; min-height: 100%; margin: 0; }
+body { background: var(--color-page); }
+button, input { font: inherit; }
+button { cursor: pointer; }

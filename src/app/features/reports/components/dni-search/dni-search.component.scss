@@ -1,0 +1,10 @@
+.dni-search {
+  width: 288px;
+  label { display: block; margin-bottom: 6px; font-size: 16px; }
+  &__field { height: 48px; display: flex; border: 1px solid #929292; border-radius: 9px; background: #fff; overflow: hidden; }
+  input { flex: 1; min-width: 0; padding: 0 12px; border: 0; outline: none; font-size: 16px; }
+  input::placeholder { color: #777; }
+  button { width: 44px; border: 0; background: #fff; }
+  button span { display: block; width: 17px; height: 17px; margin: auto; border: 1.8px solid var(--color-brand); border-radius: 50%; position: relative; }
+  button span::after { content: ''; position: absolute; width: 9px; border-top: 2px solid var(--color-brand); transform: rotate(48deg); right: -7px; bottom: -4px; }
+}

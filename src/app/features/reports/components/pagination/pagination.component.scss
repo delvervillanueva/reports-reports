@@ -1,0 +1,10 @@
+.pagination {
+  height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between;
+  p { margin: 0; color: var(--color-muted); font-size: 16px; }
+  p strong { color: var(--color-text); }
+  nav { display: flex; align-items: center; gap: 13px; height: 100%; }
+  button { border: 0; background: transparent; color: var(--color-teal); font-weight: 700; min-width: 28px; height: 32px; padding: 0 3px; }
+  button:disabled { color: #d3d3d3; cursor: default; }
+  &__page--active { border-radius: 50%; background: #247e84 !important; color: #fff !important; }
+  &__ellipsis { color: #777; }
+}

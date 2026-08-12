@@ -1,0 +1,7 @@
+.requests-table__scroll { width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #fff; }
+col { width: 20%; }
+th, td { height: 48px; padding: 0 16px; border-bottom: 1px solid var(--color-line); text-align: left; white-space: nowrap; }
+th button { padding: 0; border: 0; background: transparent; color: var(--color-text); font-size: 16px; font-weight: 700; }
+th button span { color: var(--color-teal); font-weight: 400; }
+td { font-size: 14px; }

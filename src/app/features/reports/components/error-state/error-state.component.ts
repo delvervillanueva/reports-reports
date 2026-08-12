@@ -1,0 +1,3 @@
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+@Component({ selector: 'app-error-state', standalone: true, template: '<div class="state"><p>{{ message() }}</p><button type="button" (click)="retry.emit()">Reintentar</button></div>', styles: '.state{height:720px;display:grid;place-content:center;text-align:center;background:#fff}.state button{border:1px solid var(--color-brand);border-radius:18px;padding:7px 18px;background:#fff;color:var(--color-brand);font-weight:700}', changeDetection: ChangeDetectionStrategy.OnPush })
+export class ErrorStateComponent { readonly message = input.required<string>(); readonly retry = output<void>(); }
