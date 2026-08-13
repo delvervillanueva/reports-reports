@@ -1,0 +1,45 @@
+<header class="reports-header">
+  <div class="reports-header__inner">
+    <a class="reports-header__brand" routerLink="/requests" aria-label="Santander Consumer">
+      <span class="reports-header__brand-icon" aria-hidden="true">♨</span>
+      <span class="reports-header__brand-text">
+        <strong>Santander</strong>
+        <small>Consumer</small>
+      </span>
+    </a>
+
+    <nav class="reports-header__nav" aria-label="Navegación principal">
+      <a
+        class="reports-header__nav-item"
+        routerLink="/customer-search"
+        routerLinkActive="reports-header__nav-item--active"
+        aria-label="Búsqueda"
+      >
+        <span class="reports-header__search-icon" aria-hidden="true"></span>
+        <span>Búsqueda</span>
+      </a>
+
+      <a
+        class="reports-header__nav-item reports-header__nav-item--requests"
+        routerLink="/requests"
+        routerLinkActive="reports-header__nav-item--active"
+        aria-label="Solicitudes"
+      >
+        <span class="reports-header__icon-wrap">
+          <span class="reports-header__requests-icon" aria-hidden="true">▤</span>
+          <span class="reports-header__badge" [attr.aria-label]="requestsCount() + ' solicitudes pendientes'">
+            {{ requestsCount() }}
+          </span>
+        </span>
+        <span class="reports-header__requests-label">Solicitudes</span>
+      </a>
+
+      <div class="reports-header__user" aria-label="Usuario autenticado">
+        <span class="reports-header__avatar" aria-hidden="true">{{ userInitials() }}</span>
+        <span class="reports-header__user-name">{{ userName() }}</span>
+      </div>
+
+      <button class="reports-header__logout" type="button" (click)="onLogout()">Cerrar sesión</button>
+    </nav>
+  </div>
+</header>

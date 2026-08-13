@@ -1,23 +1,37 @@
 .reports-header {
-  height: 88px;
-  padding: 0 var(--space-page);
+  position: sticky;
+  top: 0;
+  z-index: 100;
   border-top: 8px solid var(--color-brand);
   border-bottom: 1px solid var(--color-line);
-  background: var(--color-surface);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  background-color: var(--color-surface);
 
-  &__brand { display: flex; align-items: center; color: var(--color-brand); text-decoration: none; line-height: 1; }
-  &__brand strong { display: block; font-size: 25px; font-weight: 500; }
-  &__brand small { display: block; margin-top: 3px; font-size: 15px; }
-  &__flame { margin-right: 5px; font-size: 30px; transform: rotate(-12deg); }
-  &__nav { display: flex; align-items: center; gap: 48px; height: 100%; }
-  &__nav a { position: relative; color: var(--color-text); text-decoration: none; font-size: 16px; font-weight: 700; }
-  &__nav a > span { margin-right: 8px; color: var(--color-brand); font-size: 25px; font-weight: 400; vertical-align: -2px; }
-  &__nav sup { position: absolute; left: 17px; top: -5px; color: var(--color-brand); font-size: 10px; }
-  &__nav &__active { color: var(--color-brand); }
-  &__user { display: flex; align-items: center; gap: 10px; font-size: 16px; }
-  &__user b { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--color-teal); color: #fff; font-size: 14px; }
-  &__nav button { padding: 7px 18px; border: 1px solid var(--color-brand); border-radius: 18px; color: var(--color-brand); background: #fff; font-weight: 700; }
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+    padding: 0 var(--space-page);
+  }
+
+  &__brand { display: inline-flex; align-items: center; color: var(--color-brand); text-decoration: none; }
+  &__brand-icon { margin-right: 5px; font-size: 30px; transform: rotate(-12deg); }
+  &__brand-text { line-height: 1; }
+  &__brand-text strong { display: block; font-size: 25px; font-weight: 500; }
+  &__brand-text small { display: block; margin-top: 3px; font-size: 15px; }
+
+  &__nav { display: flex; align-items: center; gap: 48px; }
+  &__nav-item { display: inline-flex; align-items: center; gap: 8px; color: var(--color-text); font-size: 16px; font-weight: 700; text-decoration: none; transition: color .15s ease; }
+  &__nav-item:hover, &__nav-item--active { color: var(--color-brand); }
+  &__nav-item--requests { gap: 12px; }
+  &__search-icon { position: relative; width: 17px; height: 17px; border: 1.8px solid var(--color-brand); border-radius: 50%; }
+  &__search-icon::after { content: ''; position: absolute; width: 9px; border-top: 2px solid var(--color-brand); right: -7px; bottom: -4px; transform: rotate(48deg); }
+  &__icon-wrap { position: relative; display: inline-flex; }
+  &__requests-icon { color: var(--color-brand); font-size: 25px; line-height: 1; }
+  &__badge { position: absolute; top: -5px; right: -8px; display: inline-flex; align-items: center; justify-content: center; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 999px; background: var(--color-brand); color: #fff; font-size: 9px; font-weight: 700; }
+  &__requests-label { font-size: 16px; font-weight: 700; }
+  &__user { display: inline-flex; align-items: center; gap: 10px; }
+  &__avatar { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: var(--color-teal); color: #fff; font-size: 14px; font-weight: 700; }
+  &__user-name { max-width: 160px; overflow: hidden; color: var(--color-text); font-size: 16px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+  &__logout { padding: 7px 18px; border: 1px solid var(--color-brand); border-radius: 18px; background: #fff; color: var(--color-brand); font-weight: 700; }
 }
